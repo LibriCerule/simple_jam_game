@@ -64,7 +64,12 @@ public class MouseFollowStrategy extends Strategy implements InputProcessor {
     @Override
     public Vector2 getMovement(float entityX, float entityY, float delta) {
         //Calculate movement vector, half the distance to the cursor every second
-        Vector2 movement = new Vector2((mouseX - entityX) / 2 * delta,(mouseY - entityY) / 2 * delta);
+        //Adjusting for 0,0 being top left instead of bottom left with mouse input
+        Vector2 movement = new Vector2((entityX - mouseX) / -2 * delta,(mouseY - (Gdx.graphics.getHeight() - entityY)) / -2 * delta);
         return movement;
+    }
+
+    public MouseFollowStrategy() {
+        Gdx.input.setInputProcessor(this);
     }
 }
