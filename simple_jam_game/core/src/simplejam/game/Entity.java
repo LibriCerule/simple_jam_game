@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Created by Declan on 5/31/2016.
  */
-public abstract class Entity {
+public class Entity {
     protected Sprite sprite;
     protected Rectangle hitbox;
     protected Strategy strategy;
@@ -21,11 +21,11 @@ public abstract class Entity {
     }
 
     public void update(float delta) {
-        Vector2 movement = strategy.getMovement();
+        Vector2 movement = strategy.getMovement(sprite.getX(), sprite.getY());
         move(movement);
     }
 
-    public void move(Vector2 movement) {
+    protected void move(Vector2 movement) {
         sprite.setPosition(sprite.getX()+movement.x, sprite.getY()+movement.y);
         hitbox.setPosition(sprite.getX(), sprite.getY());
     }
