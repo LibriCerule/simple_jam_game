@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class SimpleJamGame extends ApplicationAdapter implements InputProcessor {
@@ -27,6 +28,8 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     float timeSinceLastSpawn = 0;
     float nextEnemyTime;
 
+    float colorTime;
+
     public void initTextures() {
         playerTexture = new Texture("core/assets/player.png");
         enemyTexture = new Texture("core/assets/enemy.png");
@@ -44,6 +47,8 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
         nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
+        colorTime = 0;
+
         MouseFollowStrategy mouseFollowStrategy = new MouseFollowStrategy();
         inputMultiplexer.addProcessor(mouseFollowStrategy);
         inputMultiplexer.addProcessor(this);
@@ -56,8 +61,10 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
 	@Override
 	public void render () {
+        float delta = Gdx.graphics.getDeltaTime();
+
         for(Entity e : entities) {
-            e.update(Gdx.graphics.getDeltaTime());
+            e.update(delta);
         }
 
         updateEnemies();
@@ -66,7 +73,17 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
         for(Entity e : entities) {
-            e.getSprite().draw(batch);
+            if (e.getStrategy() instanceof MouseFollowStrategy) {
+                colorTime = colorTime + delta * 2;
+                float red = (float) (Math.sin(colorTime + 0) * 127 + 128) / 255f;
+                float green = (float) (Math.sin(colorTime + 2) * 127 + 128) / 255f;
+                float blue = (float) (Math.sin(colorTime + 4) * 127 + 128) / 255f;
+                e.getSprite().setColor(red, green, blue, 1);
+                e.getSprite().draw(batch);
+            } else {
+                e.getSprite().draw(batch);
+            }
+
         }
 
 		batch.end();
