@@ -61,8 +61,8 @@ public class MouseFollowStrategy extends Strategy implements InputProcessor {
     }
 
     @Override
-    public Vector2 getMovement(float entityX, float entityY) {
-        Vector2 movement = new Vector2((mouseX - entityX) / 2,(mouseY - entityY) / 2);
+    public Vector2 getMovement(float entityX, float entityY, float delta) {
+        Vector2 movement = new Vector2((mouseX - entityX) / 2 * delta,(mouseY - entityY) / 2 * delta);
         return movement;
     }
 }
