@@ -28,7 +28,7 @@ public class Entity {
     }
 
     public void update(float delta) {
-        Vector2 movement = strategy.getMovement(sprite.getX(), sprite.getY(), delta);
+        Vector2 movement = strategy.getMovement(sprite, delta);
         move(movement);
     }
 
@@ -44,5 +44,7 @@ public class Entity {
     public Sprite getSprite() {
         return sprite;
     }
+
+    public Strategy getStrategy() { return strategy; }
 
 }

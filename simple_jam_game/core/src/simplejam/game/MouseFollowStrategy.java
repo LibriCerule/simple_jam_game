@@ -2,6 +2,7 @@ package simplejam.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -62,10 +63,10 @@ public class MouseFollowStrategy extends Strategy implements InputProcessor {
     }
 
     @Override
-    public Vector2 getMovement(float entityX, float entityY, float delta) {
+    public Vector2 getMovement(Sprite entity, float delta) {
         //Calculate movement vector, half the distance to the cursor every second
         //Adjusting for 0,0 being top left instead of bottom left with mouse input
-        Vector2 movement = new Vector2((entityX - mouseX) * -1.5f * delta,(mouseY - (Gdx.graphics.getHeight() - entityY)) * -1.5f * delta);
+        Vector2 movement = new Vector2((entity.getX() - mouseX + entity.getWidth()/2) * -1.5f * delta,(mouseY - (Gdx.graphics.getHeight() - entity.getY()) + + entity.getHeight()/2) * -1.5f * delta);
         return movement;
     }
 }

@@ -13,14 +13,13 @@ import java.util.ArrayList;
 
 public class SimpleJamGame extends ApplicationAdapter implements InputProcessor {
 	SpriteBatch batch;
-	Texture img;
 
     ArrayList<Entity> entities;
     Entity player;
 
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
-    float speed = 5;
+    float speed = 1;
     float rate = 1;
     float deviation = .5f;
 
@@ -30,7 +29,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("core/assets/badlogic.jpg");
 
         entities = new ArrayList<Entity>();
 
@@ -40,7 +38,8 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         inputMultiplexer.addProcessor(mouseFollowStrategy);
         inputMultiplexer.addProcessor(this);
 
-        player = new Entity(mouseFollowStrategy, img, 0, 0);
+        Texture playerTexture = new Texture("core/assets/player.png");
+        player = new Entity(mouseFollowStrategy, playerTexture, 0, 0);
         entities.add(player);
 
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -54,7 +53,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
         updateEnemies();
 
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
         for(Entity e : entities) {
@@ -70,7 +69,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         rate *= 1 - timeBit/1000;
         speed += timeBit;
 
-        Texture enemyTexture = new Texture("core/assets/badlogic.jpg");
+        Texture enemyTexture = new Texture("core/assets/enemy.png");
 
         int yStart = (int)(Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
         int xStart = Gdx.graphics.getWidth();
@@ -86,16 +85,34 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
         for(int i = 0; i < entities.size(); i++) {
             Entity e = entities.get(i);
-            if(e.getSprite().getX() < -e.getSprite().getWidth()) {
+            if(e.getSprite().getX() < -e.getSprite().getWidth() || e.getSprite().getX() > Gdx.graphics.getWidth() || e.getSprite().getY() < -e.getSprite().getHeight() || e.getSprite().getHeight() > Gdx.graphics.getHeight()) {
                 entities.remove(i);
 
                 i--;
+            }
+
+            if(e.isDestroyable) {
+                for(int j = 0; j < entities.size(); j++) {
+                    Entity toHit = entities.get(j);
+
+                    if(i != j && toHit != player && !e.getStrategy().getClass().equals(toHit.getStrategy().getClass()) && toHit.getHitbox().overlaps(e.getHitbox())) {
+                        entities.remove(e);
+
+                        if(toHit.isDestroyable)
+                            entities.remove(toHit);
+                    }
+                }
+            }
+
+            if(e != player && !(e.getStrategy() instanceof BulletStrategy) && e.getHitbox().overlaps(player.getHitbox())) {
+                entities.remove(player);
             }
         }
     }
 
     @Override
     public boolean keyDown(int keycode) {
+
         return false;
     }
 
@@ -111,6 +128,11 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Texture bulletTexture = new Texture("core/assets/bullet.png");
+        Vector2 init = new Vector2(player.getSprite().getX() + player.getSprite().getWidth()/2 - bulletTexture.getWidth()/2, player.getSprite().getY() + player.getSprite().getHeight()/2 - bulletTexture.getHeight()/2);
+        Entity bullet = new Entity(new BulletStrategy(init, new Vector2(screenX, screenY), 25), bulletTexture, (int)init.x, (int)init.y, true);
+
+        entities.add(bullet);
         return false;
     }
 

@@ -1,5 +1,6 @@
 package simplejam.game;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -15,7 +16,7 @@ public class AcceleratedStrategy extends Strategy {
     }
 
     @Override
-    public Vector2 getMovement(float entityX, float entityY, float delta) {
+    public Vector2 getMovement(Sprite entity, float delta) {
         velocity = velocity.add(acceleration.scl(delta));
         return velocity;
     }
