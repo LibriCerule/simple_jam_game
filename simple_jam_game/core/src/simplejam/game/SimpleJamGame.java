@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
@@ -32,6 +33,10 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     float colorTime;
     float starTime;
 
+    float score;
+
+    BitmapFont font;
+
     public void initTextures() {
         playerTexture = new Texture("core/assets/player.png");
         enemyTexture = new Texture("core/assets/enemy.png");
@@ -43,6 +48,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+        font = new BitmapFont();
         initTextures();
 
         entities = new ArrayList<Entity>();
@@ -52,6 +58,8 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
         colorTime = 0;
         starTime = 0;
+
+        score = 0;
 
         MouseFollowStrategy mouseFollowStrategy = new MouseFollowStrategy();
         inputMultiplexer.addProcessor(mouseFollowStrategy);
@@ -97,6 +105,8 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
         }
 
+        font.draw(batch, "Score: " + ((int) (score * 10)) / 10f, 5, Gdx.graphics.getHeight()-5);
+
 		batch.end();
 	}
 
@@ -112,6 +122,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         Vector2 acceleration = new Vector2(0, 0);
 
         if(timeSinceLastSpawn >= nextEnemyTime) {
+            score += 0.1;
             if (Math.random() < 0.2) {
                 Entity p1 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
                 yStart = (int) (Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
@@ -144,6 +155,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                         entities.remove(e);
 
                         if(toHit.isDestroyable)
+                            score += 1;
                             entities.remove(toHit);
                     }
                 }
@@ -157,6 +169,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 entities.remove(((PentagonGate) e).getP1());
                 entities.remove(((PentagonGate) e).getP2());
                 entities.remove(e);
+                score += 5;
             }
         }
     }
