@@ -154,9 +154,10 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                     if(i != j && toHit != player && e.getStrategy() != null && toHit.getStrategy() != null && !e.getStrategy().getClass().equals(toHit.getStrategy().getClass()) && toHit.getHitbox().overlaps(e.getHitbox())) {
                         entities.remove(e);
 
-                        if(toHit.isDestroyable)
-                            score += 1;
+                        if(toHit.isDestroyable) {
                             entities.remove(toHit);
+                            score += 1;
+                        }
                     }
                 }
             }
