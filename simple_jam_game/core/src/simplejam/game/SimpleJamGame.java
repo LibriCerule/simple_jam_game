@@ -17,6 +17,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     Texture playerTexture, enemyTexture, bulletTexture, gateTexture, starTexture;
 
     ArrayList<Entity> entities;
+
     Entity player;
 
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -101,7 +102,14 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         Vector2 acceleration = new Vector2(0, 0);
 
         if(timeSinceLastSpawn >= nextEnemyTime) {
-            entities.add(new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart));
+            Entity p1 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
+            yStart = (int)(Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
+            Entity p2 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
+            PentagonGate pgate = new PentagonGate(p1, p2, playerTexture);
+            entities.add(pgate);
+            entities.add(p1);
+            entities.add(p2);
+            //entities.add(new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart));
             nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
             timeSinceLastSpawn = 0;
@@ -119,7 +127,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 for(int j = 0; j < entities.size(); j++) {
                     Entity toHit = entities.get(j);
 
-                    if(i != j && toHit != player && !e.getStrategy().getClass().equals(toHit.getStrategy().getClass()) && toHit.getHitbox().overlaps(e.getHitbox())) {
+                    if(i != j && toHit != player && e.getStrategy() != null && toHit.getStrategy() != null && !e.getStrategy().getClass().equals(toHit.getStrategy().getClass()) && toHit.getHitbox().overlaps(e.getHitbox())) {
                         entities.remove(e);
 
                         if(toHit.isDestroyable)
@@ -128,8 +136,14 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 }
             }
 
-            if(e != player && !(e.getStrategy() instanceof BulletStrategy) && e.getHitbox().overlaps(player.getHitbox())) {
+            if(e != player && e.getStrategy() != null && !(e.getStrategy() instanceof BulletStrategy) && e.getHitbox().overlaps(player.getHitbox())) {
                 entities.remove(player);
+            }
+
+            if(e.getStrategy() == null && ((PentagonGate)e).getBoundingBox().overlaps(player.getHitbox())){
+                entities.remove(((PentagonGate) e).getP1());
+                entities.remove(((PentagonGate) e).getP2());
+                entities.remove(e);
             }
         }
     }
