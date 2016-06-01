@@ -16,8 +16,9 @@ public class Entity {
 
     public Entity(Strategy strategy, Texture texture, int xPos, int yPos) {
         this.strategy = strategy;
-        sprite = new Sprite(texture, xPos, yPos);
-        hitbox = new Rectangle(xPos, yPos, sprite.getWidth(), sprite.getHeight());
+        sprite = new Sprite(texture);
+        sprite.setPosition(xPos, yPos);
+        hitbox = new Rectangle(xPos, yPos, texture.getWidth(), texture.getHeight());
     }
 
     public void update(float delta) {
