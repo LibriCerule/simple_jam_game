@@ -89,6 +89,9 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 e.getSprite().setColor(red, green, blue, 1);
                 e.getSprite().draw(batch);
             } else {
+                if (e.isDestroyable && e.getStrategy() instanceof AcceleratedStrategy) {
+                    e.getSprite().setColor(0.5, 1, 0, 1);
+                }
                 e.getSprite().draw(batch);
             }
 
@@ -109,7 +112,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         Vector2 acceleration = new Vector2(0, 0);
 
         if(timeSinceLastSpawn >= nextEnemyTime) {
-            entities.add(new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart));
+            entities.add(new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart, (Math.random() > 0.5)));
             nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
             timeSinceLastSpawn = 0;
