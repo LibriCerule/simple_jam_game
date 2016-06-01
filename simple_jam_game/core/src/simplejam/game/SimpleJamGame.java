@@ -17,7 +17,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     Texture playerTexture, enemyTexture, bulletTexture, gateTexture, starTexture;
 
     ArrayList<Entity> entities;
-
+    ArrayList<Entity> stars;
     Entity player;
 
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -30,6 +30,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     float nextEnemyTime;
 
     float colorTime;
+    float starTime;
 
     public void initTextures() {
         playerTexture = new Texture("core/assets/player.png");
@@ -45,10 +46,12 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         initTextures();
 
         entities = new ArrayList<Entity>();
+        stars = new ArrayList<Entity>();
 
         nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
         colorTime = 0;
+        starTime = 0;
 
         MouseFollowStrategy mouseFollowStrategy = new MouseFollowStrategy();
         inputMultiplexer.addProcessor(mouseFollowStrategy);
@@ -69,10 +72,14 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         }
 
         updateEnemies();
+        updateBackground(delta);
 
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
+
+        drawBackground();
+
         for(Entity e : entities) {
             if (e.getStrategy() instanceof MouseFollowStrategy) {
                 colorTime = colorTime + delta * 2;
@@ -82,6 +89,9 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 e.getSprite().setColor(red, green, blue, 1);
                 e.getSprite().draw(batch);
             } else {
+                if (e.isDestroyable && e.getStrategy() instanceof AcceleratedStrategy) {
+                    e.getSprite().setColor(0.5f, 1, 0, 1);
+                }
                 e.getSprite().draw(batch);
             }
 
@@ -102,14 +112,17 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         Vector2 acceleration = new Vector2(0, 0);
 
         if(timeSinceLastSpawn >= nextEnemyTime) {
-            Entity p1 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
-            yStart = (int)(Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
-            Entity p2 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
-            PentagonGate pgate = new PentagonGate(p1, p2, playerTexture);
-            entities.add(pgate);
-            entities.add(p1);
-            entities.add(p2);
-            //entities.add(new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart));
+            if (Math.random() < 0.2) {
+                Entity p1 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
+                yStart = (int) (Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
+                Entity p2 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
+                PentagonGate pgate = new PentagonGate(p1, p2, playerTexture);
+                entities.add(pgate);
+                entities.add(p1);
+                entities.add(p2);
+            } else {
+                entities.add(new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart, (Math.random() > 0.5)));
+            }
             nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
             timeSinceLastSpawn = 0;
@@ -145,6 +158,24 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 entities.remove(((PentagonGate) e).getP2());
                 entities.remove(e);
             }
+        }
+    }
+
+    private void drawBackground() {
+        for (Entity e : stars) {
+            e.getSprite().setColor(1, 1, (float) (1-Math.random()*100/255), 1);
+            e.getSprite().draw(batch);
+        }
+    }
+
+    private void updateBackground(float delta) {
+        starTime += delta;
+        if (starTime >= nextEnemyTime/5f) {
+            stars.add(new Entity(new AcceleratedStrategy(new Vector2((int) (-20 + (Math.random()*8.0 - 4.0)), 0), new Vector2(0,0)), starTexture, Gdx.graphics.getWidth(), (int) (Gdx.graphics.getHeight() - Math.random()*Gdx.graphics.getHeight())));
+            starTime = 0;
+        }
+        for (Entity e : stars) {
+            e.update(delta);
         }
     }
 
