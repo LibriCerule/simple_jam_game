@@ -21,11 +21,11 @@ public class Entity {
     }
 
     public void update(float delta) {
-        Vector2 movement = strategy.getMovement();
+        Vector2 movement = strategy.getMovement(sprite.getX(), sprite.getY(), delta);
         move(movement);
     }
 
-    public void move(Vector2 movement) {
+    protected void move(Vector2 movement) {
         sprite.setPosition(sprite.getX()+movement.x, sprite.getY()+movement.y);
         hitbox.setPosition(sprite.getX(), sprite.getY());
     }
