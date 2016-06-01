@@ -13,12 +13,18 @@ public class Entity {
     protected Sprite sprite;
     protected Rectangle hitbox;
     protected Strategy strategy;
+    protected boolean isDestroyable;
 
-    public Entity(Strategy strategy, Texture texture, int xPos, int yPos) {
+    public Entity(Strategy strategy, Texture texture, int xPos, int yPos, boolean isDestroyable) {
         this.strategy = strategy;
         sprite = new Sprite(texture);
         sprite.setPosition(xPos, yPos);
         hitbox = new Rectangle(xPos, yPos, sprite.getWidth(), sprite.getHeight());
+        this.isDestroyable = isDestroyable;
+    }
+
+    public Entity(Strategy strategy, Texture texture, int xPos, int yPos) {
+        this(strategy, texture, xPos, yPos, false);
     }
 
     public void update(float delta) {
