@@ -2,7 +2,6 @@ package simplejam.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,9 +32,9 @@ public class SimpleJamGame extends ApplicationAdapter {
 
         nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
+        player = new Entity(new MouseFollowStrategy(), img, 0, 0);
+        entities.add(player);
 
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();  //helps with tearing?
-        config.vSyncEnabled = true;
 	}
 
 	@Override
@@ -60,7 +59,7 @@ public class SimpleJamGame extends ApplicationAdapter {
         float timeBit = Gdx.graphics.getDeltaTime();
         timeSinceLastSpawn += timeBit;
         rate *= 1 - timeBit/1000;
-        //speed += timeBit;
+        speed += timeBit;
 
         Texture enemyTexture = new Texture("core/assets/badlogic.jpg");
 
