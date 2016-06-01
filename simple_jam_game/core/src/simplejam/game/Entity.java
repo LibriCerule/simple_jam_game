@@ -16,7 +16,7 @@ public class Entity {
 
     public Entity(Strategy strategy, Texture texture, int xPos, int yPos) {
         this.strategy = strategy;
-        sprite = new Sprite(texture, xPos, yPos);
+        sprite = new Sprite(texture, xPos, yPos, texture.getWidth(), texture.getHeight());
         hitbox = new Rectangle(xPos, yPos, sprite.getWidth(), sprite.getHeight());
     }
 
