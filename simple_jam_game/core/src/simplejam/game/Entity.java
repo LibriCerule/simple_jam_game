@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Created by Declan on 5/31/2016.
  */
-public abstract class Entity {
+public class Entity {
     protected Sprite sprite;
     protected Rectangle hitbox;
     protected Strategy strategy;
