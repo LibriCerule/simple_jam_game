@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public class SimpleJamGame extends ApplicationAdapter implements InputProcessor {
 	SpriteBatch batch;
+    Texture playerTexture, enemyTexture, bulletTexture, gateTexture, starTexture;
 
     ArrayList<Entity> entities;
     Entity player;
@@ -25,10 +26,19 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     float timeSinceLastSpawn = 0;
     float nextEnemyTime;
+
+    public void initTextures() {
+        playerTexture = new Texture("core/assets/player.png");
+        enemyTexture = new Texture("core/assets/enemy.png");
+        bulletTexture = new Texture("core/assets/bullet.png");
+        gateTexture = new Texture("core/assets/gate.png");
+        starTexture = new Texture("core/assets/star.png");
+    }
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+        initTextures();
 
         entities = new ArrayList<Entity>();
 
@@ -38,7 +48,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         inputMultiplexer.addProcessor(mouseFollowStrategy);
         inputMultiplexer.addProcessor(this);
 
-        Texture playerTexture = new Texture("core/assets/player.png");
         player = new Entity(mouseFollowStrategy, playerTexture, 0, 0);
         entities.add(player);
 
@@ -68,8 +77,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         timeSinceLastSpawn += timeBit;
         rate *= 1 - timeBit/1000;
         speed += timeBit;
-
-        Texture enemyTexture = new Texture("core/assets/enemy.png");
 
         int yStart = (int)(Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
         int xStart = Gdx.graphics.getWidth();
@@ -128,7 +135,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Texture bulletTexture = new Texture("core/assets/bullet.png");
         Vector2 init = new Vector2(player.getSprite().getX() + player.getSprite().getWidth()/2 - bulletTexture.getWidth()/2, player.getSprite().getY() + player.getSprite().getHeight()/2 - bulletTexture.getHeight()/2);
         Entity bullet = new Entity(new BulletStrategy(init, new Vector2(screenX, screenY), 25), bulletTexture, (int)init.x, (int)init.y, true);
 
