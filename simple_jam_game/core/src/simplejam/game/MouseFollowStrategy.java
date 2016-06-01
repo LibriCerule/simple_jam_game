@@ -68,8 +68,4 @@ public class MouseFollowStrategy extends Strategy implements InputProcessor {
         Vector2 movement = new Vector2((entityX - mouseX) * -1.5f * delta,(mouseY - (Gdx.graphics.getHeight() - entityY)) * -1.5f * delta);
         return movement;
     }
-
-    public MouseFollowStrategy() {
-        Gdx.input.setInputProcessor(this);
-    }
 }
