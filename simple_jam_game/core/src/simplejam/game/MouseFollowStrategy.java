@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
  * Created by Declan on 5/31/2016.
  */
 public class MouseFollowStrategy extends Strategy implements InputProcessor {
+    //Store last checked mouse position
     float mouseX = 0;
     float mouseY = 0;
 
@@ -62,6 +63,7 @@ public class MouseFollowStrategy extends Strategy implements InputProcessor {
 
     @Override
     public Vector2 getMovement(float entityX, float entityY, float delta) {
+        //Calculate movement vector, half the distance to the cursor every second
         Vector2 movement = new Vector2((mouseX - entityX) / 2 * delta,(mouseY - entityY) / 2 * delta);
         return movement;
     }
