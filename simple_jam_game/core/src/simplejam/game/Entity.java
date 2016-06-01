@@ -12,21 +12,30 @@ import com.badlogic.gdx.math.Vector2;
 public abstract class Entity {
     protected Sprite sprite;
     protected Rectangle hitbox;
-    //TODO movement strategies
+    protected Strategy strategy;
 
-    public Entity(Texture texture, int xPos, int yPos) {
-        sprite = new Sprite(texture);
+    public Entity(Strategy strategy, Texture texture, int xPos, int yPos) {
+        this.strategy = strategy;
+        sprite = new Sprite(texture, xPos, yPos);
+        hitbox = new Rectangle(xPos, yPos, sprite.getWidth(), sprite.getHeight());
     }
 
     public void update(float delta) {
+        Vector2 movement = strategy.getMovement();
+        move(movement);
     }
 
     public void move(Vector2 movement) {
         sprite.setPosition(sprite.getX()+movement.x, sprite.getY()+movement.y);
+        hitbox.setPosition(sprite.getX(), sprite.getY());
     }
 
     public Rectangle getHitbox() {
         return hitbox;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
     }
 
 }
