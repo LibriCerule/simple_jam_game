@@ -17,7 +17,8 @@ public class AcceleratedStrategy extends Strategy {
 
     @Override
     public Vector2 getMovement(Sprite entity, float delta) {
-        velocity = velocity.add(acceleration.scl(delta));
+        velocity.x += acceleration.x * delta;
+        velocity.y += acceleration.y * delta;
         return velocity;
     }
 }
