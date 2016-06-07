@@ -44,7 +44,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     public void initTextures() {
         playerTexture = new Texture("core/assets/player.png");
         enemyTexture = new Texture("core/assets/enemy.png");
-        bulletTexture = new Texture("core/assets/bullet.png");
+        bulletTexture = new Texture("core/assets/player.png");
         gateTexture = new Texture("core/assets/gate.png");
         starTexture = new Texture("core/assets/star.png");
     }
@@ -104,8 +104,10 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 float green = (float) (Math.sin(colorTime + 2) * 127 + 128) / 255f;
                 float blue = (float) (Math.sin(colorTime + 4) * 127 + 128) / 255f;
                 e.getSprite().setColor(red, green, blue, 1);
+                e.rotateSprite(90*delta);
                 e.getSprite().draw(batch);
             } else {
+                e.rotateSprite(30*delta);
                 e.getSprite().draw(batch);
             }
 
@@ -145,8 +147,9 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 boolean destructible = Math.random() > 0.5;
                 Entity e = new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart, destructible);
                 if (destructible) {
-                    e.getSprite().setColor(0.35f, 0.35f, 0, 1);
+                    e.getSprite().setColor(0.4f, 0.30f, 0, 1);
                 }
+                e.rotateSprite((float) Math.random()*360);
                 entities.add(e);
             }
             nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
@@ -201,7 +204,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         if (starTime >= nextEnemyTime/3f) {
             Entity e = new Entity(new AcceleratedStrategy(new Vector2((int) (-10 + (Math.random()*4.0 - 2.0)), 0), new Vector2(0,0)), starTexture, Gdx.graphics.getWidth(), (int) (Gdx.graphics.getHeight() - Math.random()*Gdx.graphics.getHeight()));
             e.getSprite().setColor(1, 1, (float) (1-Math.random()*100/255), 1);
-            e.getSprite().scale(-0.5f);
             e.getSprite().rotate((float) Math.random()*80-30);
             stars.add(e);
             starTime = 0;
@@ -247,7 +249,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 init = new Vector2(player.getSprite().getX() + player.getSprite().getWidth()/2 - bulletTexture.getWidth()/2, player.getSprite().getY() + player.getSprite().getHeight()/2 - bulletTexture.getHeight()/2);
         Entity bullet = new Entity(new BulletStrategy(init, new Vector2(screenX, screenY), 25), bulletTexture, (int)init.x, (int)init.y, true);
-
+        bullet.scaleSprite(-0.5f);
         entities.add(bullet);
         return false;
     }
