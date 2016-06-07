@@ -4,6 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 
 public class SimpleJamGame extends ApplicationAdapter implements InputProcessor {
@@ -50,6 +53,11 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 		batch = new SpriteBatch();
         font = new BitmapFont();
         initTextures();
+
+        Music menuMusic = Gdx.audio.newMusic(new FileHandle(new File("core/assets/GameMusicLoop.wav")));
+        menuMusic.setVolume(0.25f);
+        menuMusic.setLooping(true);
+        menuMusic.play();
 
         entities = new ArrayList<Entity>();
         stars = new ArrayList<Entity>();
