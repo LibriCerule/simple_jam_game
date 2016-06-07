@@ -23,11 +23,11 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
-    float speed = 2;
-    float rate = 1;
+    float speed;
+    float rate;
     float deviation = .5f;
 
-    float timeSinceLastSpawn = 0;
+    float timeSinceLastSpawn;
     float nextEnemyTime;
 
     float colorTime;
@@ -40,6 +40,8 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     Music gameMusic;
 
     BitmapFont font;
+
+    boolean isPaused = false;
 
     public void initTextures() {
         playerTexture = new Texture("core/assets/player.png");
@@ -58,10 +60,21 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         gameMusic = Gdx.audio.newMusic(new FileHandle(new File("core/assets/GameMusicLoop.wav")));
         gameMusic.setVolume(0.25f);
         gameMusic.setLooping(true);
-        gameMusic.play();
+
+        reset();
+
+        Gdx.input.setInputProcessor(inputMultiplexer);
+	}
+
+    public void reset() {
+        speed = 2;
+        timeSinceLastSpawn = 0;
+        rate = 1;
 
         entities = new ArrayList<Entity>();
         stars = new ArrayList<Entity>();
+
+        gameMusic.play();
 
         nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
@@ -76,46 +89,54 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
         player = new Entity(mouseFollowStrategy, playerTexture, 0, 0);
         entities.add(player);
-
-        Gdx.input.setInputProcessor(inputMultiplexer);
-	}
+    }
 
 	@Override
 	public void render () {
-        float delta = Gdx.graphics.getDeltaTime();
+        if (!isPaused) {
+            float delta = Gdx.graphics.getDeltaTime();
 
-        for(Entity e : entities) {
-            e.update(delta);
-        }
-
-        updateEnemies();
-        updateBackground(delta);
-
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-
-        drawBackground();
-
-        for(Entity e : entities) {
-            if (e.getStrategy() instanceof MouseFollowStrategy) {
-                colorTime = colorTime + delta * 2;
-                float red = (float) (Math.sin(colorTime + 0) * 127 + 128) / 255f;
-                float green = (float) (Math.sin(colorTime + 2) * 127 + 128) / 255f;
-                float blue = (float) (Math.sin(colorTime + 4) * 127 + 128) / 255f;
-                e.getSprite().setColor(red, green, blue, 1);
-                e.rotateSprite(90*delta);
-                e.getSprite().draw(batch);
-            } else {
-                e.rotateSprite(30*delta);
-                e.getSprite().draw(batch);
+            for (Entity e : entities) {
+                e.update(delta);
             }
 
+            updateEnemies();
+            updateBackground(delta);
+
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            batch.begin();
+
+            drawBackground();
+
+            for (Entity e : entities) {
+                if (e.getStrategy() instanceof MouseFollowStrategy) {
+                    colorTime = colorTime + delta * 2;
+                    float red = (float) (Math.sin(colorTime + 0) * 127 + 128) / 255f;
+                    float green = (float) (Math.sin(colorTime + 2) * 127 + 128) / 255f;
+                    float blue = (float) (Math.sin(colorTime + 4) * 127 + 128) / 255f;
+                    e.getSprite().setColor(red, green, blue, 1);
+                    e.rotateSprite(90 * delta);
+                    e.getSprite().draw(batch);
+                } else {
+                    e.rotateSprite(30 * delta);
+                    e.getSprite().draw(batch);
+                }
+
+            }
+
+            font.draw(batch, "Score: " + ((int) (score * 10)) / 10f, 5, Gdx.graphics.getHeight() - 5);
+
+            batch.end();
+        } else {
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            gameMusic.pause();
+            batch.begin();
+            font.draw(batch, "You have died. Press X to retry!", Gdx.graphics.getWidth()/2-35, Gdx.graphics.getHeight()/2-8);
+            font.draw(batch, "Your final score was: " + ((int) (score * 10)) / 10f, Gdx.graphics.getWidth()/2-35, Gdx.graphics.getHeight()/2-28);
+            batch.end();
         }
-
-        font.draw(batch, "Score: " + ((int) (score * 10)) / 10f, 5, Gdx.graphics.getHeight()-5);
-
-		batch.end();
 	}
 
     private void updateEnemies() {
@@ -181,6 +202,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
             if(e != player && e.getStrategy() != null && !(e.getStrategy() instanceof BulletStrategy) && e.getHitbox().overlaps(player.getHitbox())) {
                 entities.remove(player);
+                isPaused = true;
             }
 
             if(e.getStrategy() == null && ((PentagonGate)e).getBoundingBox().overlaps(player.getHitbox())){
@@ -231,6 +253,10 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         if (mFlag) {
             System.out.println(volume);
             gameMusic.setVolume(volume / 100f);
+        }
+        if (keycode == Input.Keys.X && isPaused) {
+            reset();
+            isPaused = false;
         }
         return false;
     }
