@@ -23,7 +23,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
-    float speed = 1;
+    float speed = 2;
     float rate = 1;
     float deviation = .5f;
 
@@ -120,7 +120,11 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         float timeBit = Gdx.graphics.getDeltaTime();
         timeSinceLastSpawn += timeBit;
         rate *= 1 - timeBit/1000;
-        speed += timeBit;
+        if (speed < 5) {
+            speed += timeBit;
+        } else {
+            speed += timeBit/2;
+        }
 
         int yStart = (int)(Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
         int xStart = Gdx.graphics.getWidth();
@@ -154,7 +158,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
             Entity e = entities.get(i);
             if(e.getSprite().getX() < -e.getSprite().getWidth() || e.getSprite().getX() > Gdx.graphics.getWidth() || e.getSprite().getY() < -e.getSprite().getHeight() || e.getSprite().getHeight() > Gdx.graphics.getHeight()) {
                 entities.remove(i);
-
                 i--;
             }
 
