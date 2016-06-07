@@ -186,15 +186,18 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     private void drawBackground() {
         for (Entity e : stars) {
-            e.getSprite().setColor(1, 1, (float) (1-Math.random()*100/255), 1);
+
             e.getSprite().draw(batch);
         }
     }
 
     private void updateBackground(float delta) {
         starTime += delta;
-        if (starTime >= nextEnemyTime/5f) {
-            stars.add(new Entity(new AcceleratedStrategy(new Vector2((int) (-20 + (Math.random()*8.0 - 4.0)), 0), new Vector2(0,0)), starTexture, Gdx.graphics.getWidth(), (int) (Gdx.graphics.getHeight() - Math.random()*Gdx.graphics.getHeight())));
+        if (starTime >= nextEnemyTime/3f) {
+            Entity e = new Entity(new AcceleratedStrategy(new Vector2((int) (-10 + (Math.random()*4.0 - 2.0)), 0), new Vector2(0,0)), starTexture, Gdx.graphics.getWidth(), (int) (Gdx.graphics.getHeight() - Math.random()*Gdx.graphics.getHeight()));
+            e.getSprite().setColor(1, 1, (float) (1-Math.random()*100/255), 1);
+            e.getSprite().scale(-0.5f);
+            stars.add(e);
             starTime = 0;
         }
         for (Entity e : stars) {
