@@ -37,6 +37,15 @@ public class Entity {
         hitbox.setPosition(sprite.getX(), sprite.getY());
     }
 
+    public void rotateSprite(float degree) {
+        sprite.rotate(degree);
+    }
+
+    public void scaleSprite(float scale) {
+        sprite.scale(scale);
+        hitbox = new Rectangle(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+    }
+
     public Rectangle getHitbox() {
         return hitbox;
     }
