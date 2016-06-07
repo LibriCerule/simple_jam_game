@@ -1,9 +1,6 @@
 package simplejam.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
@@ -38,6 +35,10 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     float score;
 
+    int volume = 25;
+
+    Music gameMusic;
+
     BitmapFont font;
 
     public void initTextures() {
@@ -54,10 +55,10 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         font = new BitmapFont();
         initTextures();
 
-        Music menuMusic = Gdx.audio.newMusic(new FileHandle(new File("core/assets/GameMusicLoop.wav")));
-        menuMusic.setVolume(0.25f);
-        menuMusic.setLooping(true);
-        menuMusic.play();
+        gameMusic = Gdx.audio.newMusic(new FileHandle(new File("core/assets/GameMusicLoop.wav")));
+        gameMusic.setVolume(0.25f);
+        gameMusic.setLooping(true);
+        gameMusic.play();
 
         entities = new ArrayList<Entity>();
         stars = new ArrayList<Entity>();
@@ -203,7 +204,23 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     @Override
     public boolean keyDown(int keycode) {
-
+        boolean mFlag = false;
+        if (keycode == Input.Keys.EQUALS) {
+            if (volume < 100) {
+                volume += 5;
+                mFlag = true;
+            }
+        }
+        if (keycode == Input.Keys.MINUS) {
+            if (volume > 0) {
+                volume -= 5;
+                mFlag = true;
+            }
+        }
+        if (mFlag) {
+            System.out.println(volume);
+            gameMusic.setVolume(volume / 100f);
+        }
         return false;
     }
 
