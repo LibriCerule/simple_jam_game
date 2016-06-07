@@ -142,11 +142,13 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
     private void updateEnemies() {
         float timeBit = Gdx.graphics.getDeltaTime();
         timeSinceLastSpawn += timeBit;
-        rate *= 1 - timeBit/1000;
+        rate *= 1 - timeBit/850;
         if (speed < 5) {
             speed += timeBit;
-        } else {
+        } else if (speed < 10) {
             speed += timeBit/2;
+        } else {
+            speed += timeBit/4;
         }
 
         int yStart = (int)(Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
