@@ -106,9 +106,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 e.getSprite().setColor(red, green, blue, 1);
                 e.getSprite().draw(batch);
             } else {
-                if (e.isDestroyable && e.getStrategy() instanceof AcceleratedStrategy) {
-                    e.getSprite().setColor(0.5f, 1, 0, 1);
-                }
                 e.getSprite().draw(batch);
             }
 
@@ -141,7 +138,12 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 entities.add(p1);
                 entities.add(p2);
             } else {
-                entities.add(new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart, (Math.random() > 0.5)));
+                boolean destructible = Math.random() > 0.5;
+                Entity e = new Entity(new AcceleratedStrategy(velocity, acceleration), enemyTexture, xStart, yStart, destructible);
+                if (destructible) {
+                    e.getSprite().setColor(0.35f, 0.35f, 0, 1);
+                }
+                entities.add(e);
             }
             nextEnemyTime = rate + (((float)Math.random() - .5f)  * deviation);
 
@@ -197,6 +199,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
             Entity e = new Entity(new AcceleratedStrategy(new Vector2((int) (-10 + (Math.random()*4.0 - 2.0)), 0), new Vector2(0,0)), starTexture, Gdx.graphics.getWidth(), (int) (Gdx.graphics.getHeight() - Math.random()*Gdx.graphics.getHeight()));
             e.getSprite().setColor(1, 1, (float) (1-Math.random()*100/255), 1);
             e.getSprite().scale(-0.5f);
+            e.getSprite().rotate((float) Math.random()*80-30);
             stars.add(e);
             starTime = 0;
         }
