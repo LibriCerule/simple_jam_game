@@ -15,7 +15,7 @@ public class PentagonGate extends Entity{
     private Polygon center;
 
     public PentagonGate(Entity p1, Entity p2, Texture texture) {
-        super(null, texture, 0, 0);
+        super(null, texture, -63, -63);
         this.p1 = p1;
         this.p2 = p2;
         float[] vertices = new float[]{
