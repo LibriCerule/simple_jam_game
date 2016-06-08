@@ -7,7 +7,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.awt.*;
 import java.io.File;
@@ -229,12 +232,22 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
             }
 
             if(e.getStrategy() == null && ((PentagonGate)e).getBoundingBox().overlaps(player.getHitbox())){
-                entities.remove(((PentagonGate) e).getP1());
-                entities.remove(((PentagonGate) e).getP2());
-                entities.remove(e);
-                score += 5;
+                if (isCollision(((PentagonGate) e).getCenter(), player.getHitbox())) {
+                    entities.remove(((PentagonGate) e).getP1());
+                    entities.remove(((PentagonGate) e).getP2());
+                    entities.remove(e);
+                    score += 5;
+                }
             }
         }
+    }
+
+    private boolean isCollision(Polygon p, Rectangle r) {
+        Polygon rPoly = new Polygon(new float[] { 0, 0, r.width, 0, r.width, r.height, 0, r.height });
+        rPoly.setPosition(r.x, r.y);
+        if (Intersector.overlapConvexPolygons(rPoly, p))
+            return true;
+        return false;
     }
 
     private void updateBackground(float delta) {

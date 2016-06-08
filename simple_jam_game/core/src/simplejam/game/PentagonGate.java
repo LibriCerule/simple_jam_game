@@ -43,4 +43,8 @@ public class PentagonGate extends Entity{
     public Entity getP1() { return p1; }
     public Entity getP2() { return p2; }
 
+    public Polygon getCenter() {
+        return center;
+    }
+
 }
