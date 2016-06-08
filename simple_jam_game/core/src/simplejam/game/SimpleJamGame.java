@@ -163,24 +163,26 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
         int xStart = Gdx.graphics.getWidth();
         Vector2 velocity = new Vector2(-speed, 0);
         Vector2 acceleration = new Vector2(0, 0);
+        Vector2 secondAccel = new Vector2(0, 0);
+        Vector2 secondVelocity = new Vector2(-speed, 0);
 
         if(timeSinceLastSpawn >= nextEnemyTime) {
             if (Math.random() < 0.5) {
                 velocity = new Vector2(-speed, (float)(Math.random() - 1)/5 * speed);
+                secondVelocity = new Vector2(-speed, (float)(Math.random() - 1)/5 * speed);
             }
 
             if (Math.random() < 0.8) {
-                acceleration = new Vector2(-(float)(Math.random() / 2), (float)(Math.random() - .5));
+                acceleration = new Vector2(-(float)(Math.random()) * 5, (float)(Math.random() - .5) * 5);
+                secondAccel = new Vector2(-(float)(Math.random()) * 5, (float)(Math.random() - .5) * 5);
             }
 
             score += 0.1;
             if (Math.random() < 0.25) {
                 Entity p1 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
                 yStart = (int) (Math.random() * (Gdx.graphics.getHeight() - enemyTexture.getHeight()));
-                if(acceleration.x != 0 && acceleration.y != 0) {
-                    acceleration = new Vector2(-(float)(Math.random() / 2), (float)(Math.random() - .5));
-                }
-                Entity p2 = new Entity(new AcceleratedStrategy(velocity, acceleration), gateTexture, xStart, yStart);
+
+                Entity p2 = new Entity(new AcceleratedStrategy(secondVelocity, secondAccel), gateTexture, xStart, yStart);
                 PentagonGate pgate = new PentagonGate(p1, p2, playerTexture);
                 entities.add(pgate);
                 entities.add(p1);
