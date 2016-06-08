@@ -93,9 +93,14 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
 	@Override
 	public void render () {
-        if (!isPaused) {
-            float delta = Gdx.graphics.getDeltaTime();
 
+        float delta = Gdx.graphics.getDeltaTime();
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.begin();
+
+        if (!isPaused) {
             for (Entity e : entities) {
                 e.update(delta);
             }
@@ -103,11 +108,9 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
             updateEnemies();
             updateBackground(delta);
 
-            Gdx.gl.glClearColor(0, 0, 0, 1);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            batch.begin();
-
-            drawBackground();
+            for (Entity e : stars) {
+                e.getSprite().draw(batch);
+            }
 
             for (Entity e : entities) {
                 if (e.getStrategy() instanceof MouseFollowStrategy) {
@@ -126,17 +129,22 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
             }
 
             font.draw(batch, "Score: " + ((int) (score * 10)) / 10f, 5, Gdx.graphics.getHeight() - 5);
-
-            batch.end();
         } else {
-            Gdx.gl.glClearColor(0, 0, 0, 1);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-            gameMusic.pause();
-            batch.begin();
+            for (Entity e : stars) {
+                e.getSprite().setColor(1, 1, 1, 0.2f);
+                e.getSprite().draw(batch);
+            }
+
+            for (Entity e : entities) {
+                e.getSprite().setColor(1, 1, 1, 0.2f);
+                e.getSprite().draw(batch);
+            }
+
             font.draw(batch, "You have died. Press X to retry!", Gdx.graphics.getWidth()/2-35, Gdx.graphics.getHeight()/2-8);
             font.draw(batch, "Your final score was: " + ((int) (score * 10)) / 10f, Gdx.graphics.getWidth()/2-35, Gdx.graphics.getHeight()/2-28);
-            batch.end();
         }
+
+        batch.end();
 	}
 
     private void updateEnemies() {
@@ -214,7 +222,7 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
             }
 
             if(e != player && e.getStrategy() != null && !(e.getStrategy() instanceof BulletStrategy) && e.getHitbox().overlaps(player.getHitbox())) {
-                entities.remove(player);
+                //entities.remove(player);
                 isPaused = true;
             }
 
@@ -224,13 +232,6 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
                 entities.remove(e);
                 score += 5;
             }
-        }
-    }
-
-    private void drawBackground() {
-        for (Entity e : stars) {
-
-            e.getSprite().draw(batch);
         }
     }
 
@@ -286,10 +287,12 @@ public class SimpleJamGame extends ApplicationAdapter implements InputProcessor 
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector2 init = new Vector2(player.getSprite().getX() + player.getSprite().getWidth()/2 - bulletTexture.getWidth()/2, player.getSprite().getY() + player.getSprite().getHeight()/2 - bulletTexture.getHeight()/2);
-        Entity bullet = new Entity(new BulletStrategy(init, new Vector2(screenX, screenY), 25), bulletTexture, (int)init.x, (int)init.y, true);
-        bullet.scaleSprite(-0.5f);
-        entities.add(bullet);
+        if (!isPaused) {
+            Vector2 init = new Vector2(player.getSprite().getX() + player.getSprite().getWidth() / 2 - bulletTexture.getWidth() / 2, player.getSprite().getY() + player.getSprite().getHeight() / 2 - bulletTexture.getHeight() / 2);
+            Entity bullet = new Entity(new BulletStrategy(init, new Vector2(screenX, screenY), 25), bulletTexture, (int) init.x, (int) init.y, true);
+            bullet.scaleSprite(-0.5f);
+            entities.add(bullet);
+        }
         return false;
     }
 
